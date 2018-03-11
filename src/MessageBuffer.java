@@ -11,6 +11,12 @@ public class MessageBuffer {
     public void addMessageWithID(SocketAddress socketAddress, String message){
         clientMessages.add(new ClientMessage(socketAddress, message));
     }
+    public boolean isEmpty(){
+        return clientMessages.isEmpty();
+    }
+    public ClientMessage getClientMessage(){
+        return clientMessages.peek();
+    }
 
 
 }
