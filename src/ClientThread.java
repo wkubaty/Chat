@@ -10,7 +10,7 @@ public class ClientThread extends Thread{
     private Server server;
     private Socket clientSocket;
     private ConcurrentLinkedQueue<ClientMessage> clientMessagesToSend;
-
+    private PrintWriter out;
     public ClientThread(Server server, Socket clientSocket){
         this.server = server;
         this.clientSocket = clientSocket;
@@ -20,18 +20,15 @@ public class ClientThread extends Thread{
     @Override
     public void run() {
         try{
-            System.out.println("client: " + clientSocket.getPort() + " connected");
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             while(true){
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String msg = in.readLine();
-                System.out.println("received message:" + msg + " from:" + clientSocket.getPort());
-                server.addMessageWithIDToBuffer(clientSocket.getLocalSocketAddress(), msg);
-
-                while(!clientMessagesToSend.isEmpty()){
-                    ClientMessage message = clientMessagesToSend.peek();
-                    out.println(message.getSocketAddress().toString() + " : " + message);
+                if(msg==null){
+                    break;
                 }
+                System.out.println(clientSocket.getRemoteSocketAddress() + " : " + msg);
+                server.addMessageWithIDToBuffer(clientSocket.getRemoteSocketAddress(), msg);
             }
         }
         catch (IOException e){
@@ -46,7 +43,6 @@ public class ClientThread extends Thread{
                 }
             }
         }
-
     }
     public void addClientMessageToSend(ClientMessage clientMessage){
         clientMessagesToSend.add(clientMessage);
@@ -54,4 +50,8 @@ public class ClientThread extends Thread{
     public SocketAddress getClientSocketAddress(){
         return clientSocket.getRemoteSocketAddress();
     }
+    public PrintWriter getOut(){
+        return out;
+    }
+
 }

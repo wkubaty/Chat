@@ -1,52 +1,29 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Server {
     private ServerSocket serverSocket;
     private MessageBuffer messageBuffer;
-    private LinkedList<ClientThread> clients;
+    private ConcurrentLinkedQueue<ClientThread> clients;
+    private MessageSender messageSender;
     private int port;
     public Server(int port) throws IOException{
         this.port = port;
         this.serverSocket = new ServerSocket(port);
         this.messageBuffer = new MessageBuffer();
-        this.clients = new LinkedList<>();
+        this.clients = new ConcurrentLinkedQueue<>();
+        this.messageSender = new MessageSender(messageBuffer, clients);
     }
     public void run(){
-        try {
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                ClientThread clientThread = new ClientThread(this, clientSocket);
-                clientThread.start();
-
-                while (!messageBuffer.isEmpty()) {
-                    ClientMessage clientMessage = messageBuffer.getClientMessage();
-                    String message = clientMessage.getMessage();
-                    for (ClientThread client : clients) {
-                        if (client.getClientSocketAddress() != clientMessage.getSocketAddress()) {
-                            client.addClientMessageToSend(clientMessage);
-
-                        }
-                    }
-                }
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-        finally{
-            if(serverSocket!=null){
-                try{
-                    serverSocket.close();
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
+        System.out.println("SERVER TCP...");
+        ServerSocketListener serverSocketListener = new ServerSocketListener(this, serverSocket);
+        serverSocketListener.start();
+        messageSender.start();
     }
 
     public void addClient(ClientThread client){
@@ -58,7 +35,9 @@ public class Server {
 
     public void addMessageWithIDToBuffer(SocketAddress socketAddress, String message){
         messageBuffer.addMessageWithID(socketAddress, message);
+        messageSender.addMessage();
     }
+
 
 
 }
