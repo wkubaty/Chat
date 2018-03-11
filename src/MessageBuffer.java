@@ -9,12 +9,23 @@ public class MessageBuffer{
         clientMessages = new ConcurrentLinkedQueue<>();
         clients = new LinkedList<>();
     }
-    public void addMessageWithID(SocketAddress socketAddress, String message){
+    public synchronized void addClientMessage(SocketAddress socketAddress, String message){
         clientMessages.add(new ClientMessage(socketAddress, message));
+        notifyAll();
     }
-    public ClientMessage getClientMessage(){
-        return clientMessages.poll();
+    public synchronized ClientMessage getClientMessage(){
+        while (clientMessages.isEmpty()){
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        ClientMessage clientMessage = clientMessages.poll();
+        notifyAll();
+        return clientMessage;
     }
+
     public void addClient(ClientThread clientThread){
         clients.add(clientThread);
     }

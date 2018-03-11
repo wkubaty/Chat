@@ -16,15 +16,7 @@ public class MessageSender extends Thread{
             sendMessages();
         }
     }
-    private synchronized void sendMessages(){
-
-        while(messageBuffer.isEmpty()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    private void sendMessages(){
         ClientMessage clientMessage = messageBuffer.getClientMessage();
         for (ClientThread client : clients) {
             if (!client.getClientSocketAddress().equals(clientMessage.getSocketAddress())) {
@@ -34,10 +26,8 @@ public class MessageSender extends Thread{
                 }
             }
         }
-        notifyAll();
+        //notifyAll();
     }
-    public synchronized void addMessage(){
-        notifyAll();
-    }
+
 
 }

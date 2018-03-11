@@ -1,9 +1,6 @@
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Server {
@@ -34,8 +31,8 @@ public class Server {
     }
 
     public void addMessageWithIDToBuffer(SocketAddress socketAddress, String message){
-        messageBuffer.addMessageWithID(socketAddress, message);
-        messageSender.addMessage();
+        messageBuffer.addClientMessage(socketAddress, message);
+    //    messageSender.addMessage();
     }
 
 
