@@ -7,15 +7,12 @@ public class Main {
 
     public static void main(String[] args) {
         final int numberOfThreads = 2;
-        final int port = 23456;
-        ExecutorService pool = Executors.newFixedThreadPool(numberOfThreads);
-        LinkedList<ClientListener> clientsList = new LinkedList<>();
+        final int port = 34567;
+       // ExecutorService pool = Executors.newFixedThreadPool(numberOfThreads);
+       // LinkedList<ClientThread> clientsList = new LinkedList<>();
         try{
             Server server = new Server(port);
-            clientsList.add(new ClientListener(server));
-            for(ClientListener cl: clientsList){
-                pool.submit(cl);
-            }
+            server.run();
         }
         catch (IOException e){
             e.printStackTrace();

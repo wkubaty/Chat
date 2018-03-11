@@ -1,12 +1,13 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.LinkedList;
 
 public class Server {
     private ServerSocket serverSocket;
     private MessageBuffer messageBuffer;
-    private LinkedList<ClientListener> clients;
+    private LinkedList<ClientThread> clients;
     private int port;
     public Server(int port) throws IOException{
         this.port = port;
@@ -15,23 +16,40 @@ public class Server {
         this.clients = new LinkedList<>();
     }
     public void run(){
-        while(true){
-            while (!messageBuffer.isEmpty()){
-                ClientMessage clientMessage = messageBuffer.getClientMessage();
-                SocketAddress socketAddress = clientMessage.getSocketAddress();
-                String message = clientMessage.getMessage();
+        try {
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                ClientThread clientThread = new ClientThread(this, clientSocket);
+                clientThread.start();
 
-                for(ClientListener client: clients){
-                    if(client.getClientSocketAddress()!=socketAddress){
-                        client.addClientMessageToSend(clientMessage);
+                while (!messageBuffer.isEmpty()) {
+                    ClientMessage clientMessage = messageBuffer.getClientMessage();
+                    String message = clientMessage.getMessage();
+                    for (ClientThread client : clients) {
+                        if (client.getClientSocketAddress() != clientMessage.getSocketAddress()) {
+                            client.addClientMessageToSend(clientMessage);
 
+                        }
                     }
-
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+        finally{
+            if(serverSocket!=null){
+                try{
+                    serverSocket.close();
+                }
+                catch (IOException e){
+                    e.printStackTrace();
                 }
             }
         }
     }
-    public void addClient(ClientListener client){
+
+    public void addClient(ClientThread client){
         clients.add(client);
     }
     public ServerSocket getServerSocket(){
