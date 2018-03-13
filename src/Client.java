@@ -4,17 +4,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class ClientThread extends Thread{
-    private Server server;
+public class Client extends Thread{
+    private MessageBuffer messageBuffer;
     private Socket clientSocket;
-    private ConcurrentLinkedQueue<ClientMessage> clientMessagesToSend;
     private PrintWriter out;
-    public ClientThread(Server server, Socket clientSocket){
-        this.server = server;
+    public Client( MessageBuffer messageBuffer, Socket clientSocket){
+        this.messageBuffer = messageBuffer;
         this.clientSocket = clientSocket;
-        this.clientMessagesToSend = new ConcurrentLinkedQueue<>();
+
     }
 
     @Override
@@ -28,7 +26,7 @@ public class ClientThread extends Thread{
                     break;
                 }
                 System.out.println(clientSocket.getRemoteSocketAddress() + " : " + msg);
-                server.addMessageWithIDToBuffer(clientSocket.getRemoteSocketAddress(), msg);
+                messageBuffer.addClientMessage(new ClientMessage(clientSocket.getRemoteSocketAddress(), msg.getBytes()));
             }
         }
         catch (IOException e){
@@ -44,9 +42,7 @@ public class ClientThread extends Thread{
             }
         }
     }
-    public void addClientMessageToSend(ClientMessage clientMessage){
-        clientMessagesToSend.add(clientMessage);
-    }
+
     public SocketAddress getClientSocketAddress(){
         return clientSocket.getRemoteSocketAddress();
     }

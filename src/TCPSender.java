@@ -1,15 +1,15 @@
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class MessageSender extends Thread{
+public class TCPSender extends Thread{
     private MessageBuffer messageBuffer;
-    private ConcurrentLinkedQueue<ClientThread> clients;
-    public MessageSender(MessageBuffer messageBuffer, ConcurrentLinkedQueue<ClientThread> clients){
+    private ConcurrentLinkedQueue<Client> clients;
+
+    public TCPSender(MessageBuffer messageBuffer, ConcurrentLinkedQueue<Client> clients){
         this.messageBuffer = messageBuffer;
         this.clients = clients;
     }
-
     @Override
     public void run(){
         while(true){
@@ -18,16 +18,14 @@ public class MessageSender extends Thread{
     }
     private void sendMessages(){
         ClientMessage clientMessage = messageBuffer.getClientMessage();
-        for (ClientThread client : clients) {
+        for (Client client : clients) {
             if (!client.getClientSocketAddress().equals(clientMessage.getSocketAddress())) {
                 PrintWriter out = client.getOut();
-                if(out!=null){
-                    out.println(clientMessage.getSocketAddress().toString() + " : " + clientMessage.getMessage());
+                if (out != null) {
+                   // System.out.println("sending tcp to : " + clientMessage.getSocketAddress());
+                    out.println(clientMessage.getSocketAddress() + " : " + new String(clientMessage.getMessage()));
                 }
             }
         }
-        //notifyAll();
     }
-
-
 }

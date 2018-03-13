@@ -2,9 +2,9 @@ import java.net.SocketAddress;
 
 public class ClientMessage {
     private SocketAddress socketAddress;
-    private String message;
+    private byte[] message;
 
-    public ClientMessage(SocketAddress socketAddress, String message){
+    public ClientMessage(SocketAddress socketAddress, byte[] message){
         this.socketAddress = socketAddress;
         this.message = message;
     }
@@ -13,7 +13,7 @@ public class ClientMessage {
         return socketAddress;
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 }

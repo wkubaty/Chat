@@ -1,16 +1,15 @@
-import java.net.SocketAddress;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MessageBuffer{
     private ConcurrentLinkedQueue<ClientMessage> clientMessages;
-    private LinkedList<ClientThread> clients;
+    private LinkedList<Client> clients;
     public MessageBuffer(){
         clientMessages = new ConcurrentLinkedQueue<>();
         clients = new LinkedList<>();
     }
-    public synchronized void addClientMessage(SocketAddress socketAddress, String message){
-        clientMessages.add(new ClientMessage(socketAddress, message));
+    public synchronized void addClientMessage(ClientMessage clientMessage){
+        clientMessages.add(clientMessage);
         notifyAll();
     }
     public synchronized ClientMessage getClientMessage(){
@@ -21,13 +20,12 @@ public class MessageBuffer{
                 e.printStackTrace();
             }
         }
-        ClientMessage clientMessage = clientMessages.poll();
-        notifyAll();
-        return clientMessage;
+        return clientMessages.poll();
+
     }
 
-    public void addClient(ClientThread clientThread){
-        clients.add(clientThread);
+    public void addClient(Client client){
+        clients.add(client);
     }
     public boolean isEmpty(){
         return clientMessages.isEmpty();
