@@ -1,13 +1,15 @@
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class UDPSender extends Thread{
     private DatagramSocket socket;
     private MessageBuffer messageBuffer;
-    private ConcurrentLinkedQueue<Client> clients;
+    private LinkedBlockingQueue<Client> clients;
 
-    public UDPSender(DatagramSocket UDPSocket, MessageBuffer messageBuffer, ConcurrentLinkedQueue<Client> clients) throws IOException{
+    public UDPSender(DatagramSocket UDPSocket, MessageBuffer messageBuffer, LinkedBlockingQueue<Client> clients) throws IOException{
         this.messageBuffer = messageBuffer;
         this.clients = clients;
         this.socket = UDPSocket;

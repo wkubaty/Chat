@@ -1,9 +1,12 @@
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MessageBuffer{
     private ConcurrentLinkedQueue<ClientMessage> clientMessages;
+    private LinkedList<Client> clients;
     public MessageBuffer(){
         clientMessages = new ConcurrentLinkedQueue<>();
+        clients = new LinkedList<>();
     }
     public synchronized void addClientMessage(ClientMessage clientMessage){
         clientMessages.add(clientMessage);
@@ -20,4 +23,8 @@ public class MessageBuffer{
         return clientMessages.poll();
 
     }
+
+
+
+
 }

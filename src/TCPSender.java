@@ -1,11 +1,13 @@
 import java.io.PrintWriter;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class TCPSender extends Thread{
     private MessageBuffer messageBuffer;
-    private ConcurrentLinkedQueue<Client> clients;
+    private LinkedBlockingQueue<Client> clients;
 
-    public TCPSender(MessageBuffer messageBuffer, ConcurrentLinkedQueue<Client> clients){
+    public TCPSender(MessageBuffer messageBuffer, LinkedBlockingQueue<Client> clients){
         this.messageBuffer = messageBuffer;
         this.clients = clients;
     }

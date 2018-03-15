@@ -1,20 +1,22 @@
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Server extends Thread{
     private ServerSocket serverSocket;
-    private ConcurrentLinkedQueue<Client> clients;
+    private LinkedBlockingQueue<Client> clients;
     private MessageBuffer messageBuffer;
     private int port;
     private int numberOfClients;
     private DatagramSocket udpSocket;
-    public Server(int port, ConcurrentLinkedQueue<Client> clients, int numberOfClients) throws IOException{
+    public Server(int port, int numberOfClients) throws IOException{
         this.port = port;
         this.serverSocket = new ServerSocket(port);
         this.messageBuffer = new MessageBuffer();
-        this.clients = clients;
+        this.clients = new LinkedBlockingQueue<>();
         this.numberOfClients = numberOfClients;
     }
     @Override
@@ -60,11 +62,6 @@ public class Server extends Thread{
 
     public ServerSocket getServerSocket(){
         return serverSocket;
-    }
-
-    public void addClientMessageToBuffer(ClientMessage clientMessage){
-
-        messageBuffer.addClientMessage(clientMessage);
     }
 
     public void reopenServerSocket(){
