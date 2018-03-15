@@ -36,8 +36,5 @@ public class ServerSocketListener extends Thread{
         catch(IOException e){
             e.printStackTrace();
         }
-        finally{
-            server.closeServerSocket();
-        }
     }
 }

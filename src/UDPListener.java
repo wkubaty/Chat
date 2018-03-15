@@ -21,10 +21,12 @@ public class UDPListener extends Thread{
                 DatagramPacket receivePacket =
                         new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 socket.receive(receivePacket);
-                /*
-                System.out.println(receivePacket.getSocketAddress() + " : ");
-                System.out.println((new String(receiveBuffer)).trim());
-                */
+                System.out.println("[INFO] Received UDP data from: " + receivePacket.getSocketAddress());
+                //
+                String msg = new String(receivePacket.getData(), receivePacket.getOffset(),
+                        receivePacket.getLength());
+                System.out.println(msg.trim());
+                //
                 SocketAddress socketAddress = receivePacket.getSocketAddress();
                 messageBuffer.addClientMessage(new ClientMessage(socketAddress, receivePacket.getData()));
             }
@@ -32,10 +34,6 @@ public class UDPListener extends Thread{
         catch (Exception e) {
             e.printStackTrace();
         }
-        finally {
-            if (socket != null){
-                socket.close();
-            }
-        }
+
     }
 }

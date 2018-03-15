@@ -1,9 +1,6 @@
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import java.net.SocketAddress;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Server extends Thread{
@@ -12,6 +9,7 @@ public class Server extends Thread{
     private MessageBuffer messageBuffer;
     private int port;
     private int numberOfClients;
+    private DatagramSocket udpSocket;
     public Server(int port, ConcurrentLinkedQueue<Client> clients, int numberOfClients) throws IOException{
         this.port = port;
         this.serverSocket = new ServerSocket(port);
@@ -23,25 +21,37 @@ public class Server extends Thread{
     public void run(){
         try{
             System.out.println("SERVER IS RUNNING...");
-            MessageBuffer TCPmessageBuffer = new MessageBuffer();
-            ServerSocketListener serverSocketListener = new ServerSocketListener(this, numberOfClients,TCPmessageBuffer);
+            MessageBuffer tcpMessageBuffer = new MessageBuffer();
+            ServerSocketListener serverSocketListener = new ServerSocketListener(this, numberOfClients, tcpMessageBuffer);
             serverSocketListener.start();
-            TCPSender tcpSender = new TCPSender(TCPmessageBuffer, clients);
+            TCPSender tcpSender = new TCPSender(tcpMessageBuffer, clients);
             tcpSender.start();
 
-            MessageBuffer UDPmessageBuffer = new MessageBuffer();
-            DatagramSocket UDPSocket = new DatagramSocket(port);
-            UDPListener udpListener = new UDPListener(UDPSocket, UDPmessageBuffer);
+            MessageBuffer udpMessageBuffer = new MessageBuffer();
+            udpSocket = new DatagramSocket(port);
+            UDPListener udpListener = new UDPListener(udpSocket, udpMessageBuffer);
             udpListener.start();
 
-            UDPSender udpSender = new UDPSender(UDPSocket, UDPmessageBuffer, clients);
+            UDPSender udpSender = new UDPSender(udpSocket, udpMessageBuffer, clients);
             udpSender.start();
+
+            tcpSender.join();
+            udpSender.join();
         }
-        catch (IOException e){
+        catch (IOException | InterruptedException e){
             e.printStackTrace();
         }
+        finally {
+            udpSocket.close();
 
-
+            if (serverSocket != null){
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void addClient(Client client){

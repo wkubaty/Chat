@@ -4,12 +4,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class UDPSender extends Thread{
     private DatagramSocket socket;
-    private int portNumber;
     private MessageBuffer messageBuffer;
     private ConcurrentLinkedQueue<Client> clients;
 
     public UDPSender(DatagramSocket UDPSocket, MessageBuffer messageBuffer, ConcurrentLinkedQueue<Client> clients) throws IOException{
-        this.portNumber = portNumber;
         this.messageBuffer = messageBuffer;
         this.clients = clients;
         this.socket = UDPSocket;
