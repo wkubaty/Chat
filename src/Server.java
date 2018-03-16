@@ -1,21 +1,17 @@
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Server extends Thread{
     private ServerSocket serverSocket;
     private LinkedBlockingQueue<Client> clients;
-    private MessageBuffer messageBuffer;
     private int port;
     private int numberOfClients;
     private DatagramSocket udpSocket;
     public Server(int port, int numberOfClients) throws IOException{
         this.port = port;
         this.serverSocket = new ServerSocket(port);
-        this.messageBuffer = new MessageBuffer();
         this.clients = new LinkedBlockingQueue<>();
         this.numberOfClients = numberOfClients;
     }

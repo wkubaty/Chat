@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.net.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class UDPSender extends Thread{
@@ -18,10 +16,16 @@ public class UDPSender extends Thread{
     @Override
     public void run(){
         while(true) {
-            sendMessages();
+            try {
+                sendMessages();
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+
         }
     }
-    private void sendMessages() {
+    private void sendMessages() throws InterruptedException{
         try {
             ClientMessage clientMessage = messageBuffer.getClientMessage();
             for (Client client : clients) {

@@ -1,4 +1,3 @@
-
 import java.net.*;
 import java.util.Arrays;
 
@@ -22,11 +21,11 @@ public class UDPListener extends Thread{
                         new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 socket.receive(receivePacket);
                 System.out.println("[INFO] Received UDP data from: " + receivePacket.getSocketAddress());
-                //
+                /*
                 String msg = new String(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getLength());
                 System.out.println(msg.trim());
-                //
+                */
                 SocketAddress socketAddress = receivePacket.getSocketAddress();
                 messageBuffer.addClientMessage(new ClientMessage(socketAddress, receivePacket.getData()));
             }

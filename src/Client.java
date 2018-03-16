@@ -9,10 +9,9 @@ public class Client extends Thread{
     private MessageBuffer messageBuffer;
     private Socket clientSocket;
     private PrintWriter out;
-    public Client( MessageBuffer messageBuffer, Socket clientSocket){
+    public Client(MessageBuffer messageBuffer, Socket clientSocket){
         this.messageBuffer = messageBuffer;
         this.clientSocket = clientSocket;
-
     }
 
     @Override
